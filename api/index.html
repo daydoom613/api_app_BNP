@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FinOps Foundation</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    .card { border: 1px solid #ddd; border-radius: 10px; padding: 20px; margin: 16px 0; }
+    button { padding: 10px 14px; cursor: pointer; }
+    pre { background: #f5f5f5; padding: 12px; border-radius: 8px; overflow: auto; }
+    input { padding: 9px; margin-right: 8px; }
+  </style>
+</head>
+<body>
+  <h1>FinOps Web Foundation</h1>
+  <p>Simple foundation application for the web-tier deployment.</p>
+
+  
+  <div class="card">
+    <h2>Catalog</h2>
+    <button onclick="getCatalog()">Get Catalog</button>
+    <pre id="catalog">Not loaded</pre>
+  </div>
+
+  <div class="card">
+    <h2>Create Order</h2>
+    <input id="productId" value="1" placeholder="Product ID">
+    <input id="quantity" type="number" value="1" min="1" placeholder="Quantity">
+    <button onclick="createOrder()">Create Order</button>
+    <pre id="order">No order created</pre>
+  </div>
+
+  <div class="card">
+    <h2>Update Item</h2>
+    <input id="itemId" value="1" placeholder="Item ID">
+    <input id="itemName" value="Updated Item" placeholder="New name">
+    <button onclick="updateItem()">Update Item</button>
+    <pre id="update">No update performed</pre>
+  </div>
+
+<script>
+async function getCatalog() {
+  const r = await fetch('/api/GetCatalog');
+  document.getElementById('catalog').textContent =
+    JSON.stringify(await r.json(), null, 2);
+}
+async function createOrder() {
+  const body = {
+    product_id: Number(document.getElementById('productId').value),
+    quantity: Number(document.getElementById('quantity').value)
+  };
+  const r = await fetch('/api/CreateOrder', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(body)
+  });
+  document.getElementById('order').textContent =
+    JSON.stringify(await r.json(), null, 2);
+}
+async function updateItem() {
+  const id = Number(document.getElementById('itemId').value);
+  const body = { name: document.getElementById('itemName').value };
+  const r = await fetch(`/api/UpdateItem/${id}`, {
+    method: 'PUT',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(body)
+  });
+  document.getElementById('update').textContent =
+    JSON.stringify(await r.json(), null, 2);
+}
+</script>
+</body>
+</html>
